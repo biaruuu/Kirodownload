@@ -4,6 +4,7 @@ import Providers from '../components/Providers';
 export const metadata = {
   title: 'Kiro: anime, simply',
   description: 'Kiro is a minimalist anime streaming app for Android. Download the APK, free.',
+  icons: { icon: '/icon.svg' },
   openGraph: {
     title: 'Kiro: anime, simply',
     description: 'A minimalist anime streaming app for Android.',

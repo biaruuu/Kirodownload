@@ -3,7 +3,6 @@
 import styled from 'styled-components';
 import {
   ArrowDownload24Regular,
-  ArrowDownload20Regular,
   Search24Regular,
   CalendarLtr24Regular,
   Alert24Regular,
@@ -17,7 +16,6 @@ import {
   DataBarVertical24Regular,
   Library24Regular,
   Video24Regular,
-  Checkmark20Regular,
 } from '@fluentui/react-icons';
 
 const FEATURES = [
@@ -51,12 +49,16 @@ const STEPS = [
   { title: 'Open Kiro', text: 'Sign in to sync your library, or continue as a guest and start watching.' },
 ];
 
+const TAGS = ['Anime', 'Streaming', 'Offline', 'Watch party', 'Sub & dub', 'Free'];
+
 export default function Site({ release, dateLabel }) {
-  const meta = [
-    release.version ? `Version ${release.version}` : null,
-    release.size ? `${release.size} MB` : null,
-    'Android 8.0 or newer',
-  ].filter(Boolean);
+  const version = release.version ? `v${release.version}` : 'Latest';
+  const stats = [
+    { value: release.size ? `${release.size} MB` : 'APK', label: 'Size' },
+    { value: 'Android 8+', label: 'Requires' },
+    { value: 'Free', label: 'Price' },
+    { value: version, label: 'Version' },
+  ];
 
   return (
     <Page>
@@ -64,129 +66,156 @@ export default function Site({ release, dateLabel }) {
         <Wrap $row>
           <Brand href="#top">KIRO</Brand>
           <NavLinks>
-            <NavLink href="#features">Features</NavLink>
-            <NavLink href="#screens">Screens</NavLink>
-            <NavLink href="#install">Install</NavLink>
+            <NavLink href="#screens">Screenshots</NavLink>
+            <NavLink href="#about">About</NavLink>
+            <NavLink href="#info">App info</NavLink>
           </NavLinks>
-          <Pill href={release.url} $small>
-            <ArrowDownload20Regular />
-            Download
-          </Pill>
         </Wrap>
       </Nav>
 
-      <Hero id="top">
-        <Wrap $hero>
-          <HeroText>
-            <Eyebrow>Free for Android</Eyebrow>
-            <H1>Anime, simply.</H1>
-            <Lead>
-              A calm, fast anime app. Find a show, press play, and pick up exactly where you stopped,
-              on any phone, even offline.
-            </Lead>
-            <Actions>
-              <Pill href={release.url}>
-                <ArrowDownload24Regular />
-                Download for Android
-              </Pill>
-              <Ghost href="#features">See features</Ghost>
-            </Actions>
-            <Meta>
-              {meta.map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-              {dateLabel ? <span>Released {dateLabel}</span> : null}
-            </Meta>
-          </HeroText>
-          <HeroPhone>
-            <Frame>
-              <img src="/screens/home.jpg" alt="Kiro home screen" width="640" height="1279" />
-            </Frame>
-          </HeroPhone>
-        </Wrap>
-      </Hero>
+      <Wrap id="top">
+        <Header>
+          <AppIcon src="/icon.svg" alt="Kiro app icon" width="128" height="128" />
+          <Titles>
+            <Name>Kiro</Name>
+            <Dev>Anime streaming</Dev>
+            <Tiny>Contains no ads from us</Tiny>
+          </Titles>
+          <InstallCol>
+            <Pill href={release.url}>
+              <ArrowDownload24Regular />
+              Install
+            </Pill>
+            <Hint>Android APK{release.size ? ` · ${release.size} MB` : ''}</Hint>
+          </InstallCol>
+        </Header>
 
-      <Section id="features">
+        <Stats>
+          {stats.map((st) => (
+            <Stat key={st.label}>
+              <b>{st.value}</b>
+              <span>{st.label}</span>
+            </Stat>
+          ))}
+        </Stats>
+      </Wrap>
+
+      <Block id="screens">
         <Wrap>
-          <SectionHead>
-            <H2>Everything you need, nothing you don’t</H2>
-            <Sub>What Kiro does today.</Sub>
-          </SectionHead>
+          <H2>Screenshots</H2>
+        </Wrap>
+        <Rail>
+          {SCREENS.map((sc) => (
+            <Shot key={sc.name}>
+              <Frame>
+                <img src={sc.src} alt={`Kiro ${sc.name} screen`} width="640" height={sc.h} loading="lazy" />
+              </Frame>
+              <figcaption>{sc.name}</figcaption>
+            </Shot>
+          ))}
+        </Rail>
+      </Block>
+
+      <Block id="about">
+        <Wrap>
+          <H2>About this app</H2>
+          <Body>
+            Kiro is a calm, fast anime app. Find a show, press play, and pick up exactly where you
+            stopped, on any phone, even offline. It checks several sources for you, keeps your
+            library in sync, and stays out of the way.
+          </Body>
+          <Tags>
+            {TAGS.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </Tags>
+        </Wrap>
+      </Block>
+
+      {release.notes && release.notes.length > 0 ? (
+        <Block>
+          <Wrap>
+            <H2>What’s new</H2>
+            <Small>
+              {version}
+              {dateLabel ? ` · ${dateLabel}` : ''}
+            </Small>
+            <Notes>
+              {release.notes.map((n, i) => (
+                <li key={i}>{n}</li>
+              ))}
+            </Notes>
+          </Wrap>
+        </Block>
+      ) : null}
+
+      <Block id="features">
+        <Wrap>
+          <H2>Features</H2>
           <Grid>
             {FEATURES.map(({ icon: Icon, title, text }) => (
               <Feature key={title}>
                 <Icon />
-                <h3>{title}</h3>
-                <p>{text}</p>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
               </Feature>
             ))}
           </Grid>
         </Wrap>
-      </Section>
+      </Block>
 
-      <Section id="screens">
+      <Block id="install">
         <Wrap>
-          <SectionHead>
-            <H2>A look inside</H2>
-            <Sub>One accent, plenty of space, content first.</Sub>
-          </SectionHead>
-        </Wrap>
-        <Rail>
-          {SCREENS.map((s) => (
-            <Shot key={s.name}>
-              <Frame>
-                <img src={s.src} alt={`Kiro ${s.name} screen`} width="640" height={s.h} loading="lazy" />
-              </Frame>
-              <strong>{s.name}</strong>
-              <span>{s.note}</span>
-            </Shot>
-          ))}
-        </Rail>
-      </Section>
-
-      <Section id="install">
-        <Wrap>
-          <SectionHead>
-            <H2>Install in a minute</H2>
-            <Sub>Kiro is an APK, so there is no store listing to wait for.</Sub>
-          </SectionHead>
+          <H2>How to install</H2>
           <Steps>
-            {STEPS.map((s, i) => (
-              <Step key={s.title}>
+            {STEPS.map((st, i) => (
+              <Step key={st.title}>
                 <Num>{i + 1}</Num>
                 <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
+                  <h3>{st.title}</h3>
+                  <p>{st.text}</p>
                 </div>
               </Step>
             ))}
           </Steps>
-          <Final>
-            <Pill href={release.url}>
-              <ArrowDownload24Regular />
-              Download Kiro{release.version ? ` ${release.version}` : ''}
-            </Pill>
-            <Notes>
-              <li><Checkmark20Regular /> Free, no ads from us</li>
-              <li><Checkmark20Regular /> Updates arrive inside the app</li>
-              <li><Checkmark20Regular /> Works on Android 8.0 and newer</li>
-            </Notes>
-          </Final>
         </Wrap>
-      </Section>
+      </Block>
+
+      <Block id="info">
+        <Wrap>
+          <H2>App info</H2>
+          <Info>
+            <Row><dt>Version</dt><dd>{release.version || 'Latest'}</dd></Row>
+            <Row><dt>Updated</dt><dd>{dateLabel || 'See releases'}</dd></Row>
+            <Row><dt>Size</dt><dd>{release.size ? `${release.size} MB` : 'See releases'}</dd></Row>
+            <Row><dt>Requires</dt><dd>Android 8.0 or newer</dd></Row>
+            <Row><dt>Package</dt><dd>com.biaruuu.kiro</dd></Row>
+            <Row><dt>Price</dt><dd>Free</dd></Row>
+            <Row>
+              <dt>All versions</dt>
+              <dd><a href="https://github.com/biaruuu/KiroApp/releases" target="_blank" rel="noreferrer">GitHub releases</a></dd>
+            </Row>
+          </Info>
+        </Wrap>
+      </Block>
 
       <Footer>
-        <Wrap $row>
-          <Brand href="#top">KIRO</Brand>
+        <Wrap>
           <FootNote>
             Kiro does not host any video. Anime information comes from AniList. Kiro is not affiliated
             with any studio or streaming service.
           </FootNote>
-          <NavLink href="https://github.com/biaruuu/KiroApp/releases" target="_blank" rel="noreferrer">
-            All releases
-          </NavLink>
         </Wrap>
       </Footer>
+
+      <Bar>
+        <Pill href={release.url}>
+          <ArrowDownload24Regular />
+          Install{release.size ? ` · ${release.size} MB` : ''}
+        </Pill>
+      </Bar>
     </Page>
   );
 }
@@ -195,30 +224,24 @@ export default function Site({ release, dateLabel }) {
 
 const Page = styled.main`
   min-height: 100vh;
+  @media (max-width: 720px) { padding-bottom: 88px; }
 `;
 
 const Wrap = styled.div`
-  max-width: ${({ theme }) => theme.max};
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 ${({ theme }) => theme.gutter};
   ${({ $row }) => $row && 'display: flex; align-items: center; justify-content: space-between; gap: 24px;'}
-  ${({ $hero }) => $hero && `
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    align-items: center;
-    gap: clamp(32px, 6vw, 80px);
-    @media (max-width: 860px) { grid-template-columns: 1fr; }
-  `}
 `;
 
 const Nav = styled.header`
   position: sticky;
   top: 0;
   z-index: 10;
-  height: 64px;
+  height: 60px;
   display: flex;
   align-items: center;
-  background: rgba(18, 18, 18, 0.82);
+  background: rgba(18, 18, 18, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid ${({ theme }) => theme.line};
@@ -226,14 +249,14 @@ const Nav = styled.header`
 `;
 
 const Brand = styled.a`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.28em;
 `;
 
 const NavLinks = styled.nav`
   display: flex;
-  gap: 28px;
+  gap: 24px;
   @media (max-width: 640px) { display: none; }
 `;
 
@@ -249,12 +272,12 @@ const Pill = styled.a`
   align-items: center;
   justify-content: center;
   gap: 10px;
-  height: ${({ $small }) => ($small ? '38px' : '52px')};
-  padding: 0 ${({ $small }) => ($small ? '16px' : '28px')};
+  height: 48px;
+  padding: 0 32px;
   border-radius: ${({ theme }) => theme.pill};
   background: #fff;
   color: #000;
-  font-size: ${({ $small }) => ($small ? '14px' : '16px')};
+  font-size: 16px;
   font-weight: 600;
   white-space: nowrap;
   transition: transform 0.15s, opacity 0.15s;
@@ -263,128 +286,149 @@ const Pill = styled.a`
   svg { flex: none; }
 `;
 
-const Ghost = styled.a`
-  display: inline-flex;
+const Header = styled.section`
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  height: 52px;
-  padding: 0 24px;
-  border-radius: ${({ theme }) => theme.pill};
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(28px, 6vw, 64px) 0 clamp(20px, 4vw, 32px);
+  @media (max-width: 720px) {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 'icon titles' 'install install';
+    > :nth-child(1) { grid-area: icon; }
+    > :nth-child(2) { grid-area: titles; }
+    > :nth-child(3) { grid-area: install; }
+  }
+`;
+
+const AppIcon = styled.img`
+  width: clamp(88px, 18vw, 128px);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 22.5%;
   border: 1px solid ${({ theme }) => theme.lineStrong};
-  font-size: 16px;
-  font-weight: 500;
-  transition: border-color 0.15s;
-  &:hover { border-color: #fff; }
 `;
 
-const Hero = styled.section`
-  padding: clamp(40px, 8vw, 96px) 0 clamp(48px, 8vw, 96px);
-`;
-
-const HeroText = styled.div`
+const Titles = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
+  gap: 2px;
+  min-width: 0;
 `;
 
-const Eyebrow = styled.span`
-  color: ${({ theme }) => theme.muted};
-  font-size: 14px;
-  letter-spacing: 0.04em;
-`;
-
-const H1 = styled.h1`
-  font-size: clamp(44px, 8vw, 84px);
-  line-height: 1;
+const Name = styled.h1`
+  font-size: clamp(30px, 6vw, 44px);
+  line-height: 1.1;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 `;
 
-const Lead = styled.p`
-  max-width: 480px;
+const Dev = styled.p`
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const Tiny = styled.p`
   color: ${({ theme }) => theme.muted};
-  font-size: clamp(16px, 2vw, 19px);
-  line-height: 1.55;
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
-`;
-
-const Meta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  color: ${({ theme }) => theme.dim};
   font-size: 13px;
 `;
 
-const HeroPhone = styled.div`
+const InstallCol = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  text-align: center;
+  @media (min-width: 721px) { min-width: 200px; }
+  a { width: 100%; }
+`;
+
+const Hint = styled.span`
+  color: ${({ theme }) => theme.dim};
+  font-size: 12px;
+`;
+
+const Stats = styled.section`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 16px 0;
+  border-top: 1px solid ${({ theme }) => theme.line};
+  border-bottom: 1px solid ${({ theme }) => theme.line};
+  @media (max-width: 480px) { grid-template-columns: repeat(2, 1fr); row-gap: 16px; }
+`;
+
+const Stat = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+  border-left: 1px solid ${({ theme }) => theme.line};
+  &:first-child { border-left: 0; }
+  @media (max-width: 480px) { &:nth-child(3) { border-left: 0; } }
+  b { font-size: clamp(15px, 2.4vw, 17px); font-weight: 600; white-space: nowrap; }
+  span { color: ${({ theme }) => theme.muted}; font-size: 12px; }
+`;
+
+const Block = styled.section`
+  padding: clamp(28px, 5vw, 48px) 0 0;
+`;
+
+const H2 = styled.h2`
+  font-size: clamp(20px, 3vw, 24px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+`;
+
+const Body = styled.p`
+  max-width: 640px;
+  color: ${({ theme }) => theme.muted};
+  font-size: 16px;
+  line-height: 1.65;
+`;
+
+const Small = styled.p`
+  color: ${({ theme }) => theme.muted};
+  font-size: 13px;
+  margin: -8px 0 12px;
+`;
+
+const Tags = styled.ul`
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  li {
+    padding: 7px 14px;
+    border: 1px solid ${({ theme }) => theme.lineStrong};
+    border-radius: ${({ theme }) => theme.pill};
+    font-size: 13px;
+    font-weight: 500;
+  }
 `;
 
 const Frame = styled.div`
   width: 100%;
-  max-width: 300px;
   overflow: hidden;
-  border-radius: 32px;
+  border-radius: 24px;
   border: 1px solid ${({ theme }) => theme.lineStrong};
   background: ${({ theme }) => theme.card};
   img { width: 100%; height: auto; }
 `;
 
-const Section = styled.section`
-  padding: clamp(48px, 8vw, 96px) 0;
-  border-top: 1px solid ${({ theme }) => theme.line};
-`;
-
-const SectionHead = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: clamp(28px, 5vw, 56px);
-`;
-
-const H2 = styled.h2`
-  font-size: clamp(26px, 4vw, 40px);
-  line-height: 1.15;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-`;
-
-const Sub = styled.p`
-  color: ${({ theme }) => theme.muted};
-  font-size: 16px;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 0 clamp(24px, 4vw, 48px);
-`;
-
-const Feature = styled.article`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 28px 0;
-  border-top: 1px solid ${({ theme }) => theme.line};
-  svg { width: 24px; height: 24px; color: #fff; }
-  h3 { font-size: 17px; font-weight: 600; }
-  p { color: ${({ theme }) => theme.muted}; font-size: 15px; line-height: 1.55; }
-`;
-
 const Rail = styled.div`
   display: flex;
-  gap: clamp(16px, 3vw, 28px);
+  gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-padding: 0 ${({ theme }) => theme.gutter};
   padding: 0 ${({ theme }) => theme.gutter} 8px;
-  max-width: calc(${({ theme }) => theme.max} + 2 * ${({ theme }) => theme.gutter});
+  max-width: calc(960px + 2 * ${({ theme }) => theme.gutter});
   margin: 0 auto;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
@@ -392,15 +436,53 @@ const Rail = styled.div`
 
 const Shot = styled.figure`
   flex: none;
-  width: clamp(200px, 62vw, 260px);
+  width: clamp(168px, 44vw, 230px);
   margin: 0;
   scroll-snap-align: start;
+  figcaption { margin-top: 8px; color: ${({ theme }) => theme.muted}; font-size: 13px; text-align: center; }
+`;
+
+const Notes = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  max-width: 680px;
+  li {
+    position: relative;
+    padding-left: 18px;
+    color: ${({ theme }) => theme.muted};
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.62em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fff;
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 clamp(24px, 5vw, 56px);
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+`;
+
+const Feature = styled.article`
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  ${Frame} { max-width: none; margin-bottom: 14px; border-radius: 28px; }
-  strong { font-size: 15px; font-weight: 600; }
-  span { color: ${({ theme }) => theme.muted}; font-size: 14px; }
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid ${({ theme }) => theme.line};
+  > svg { flex: none; width: 24px; height: 24px; margin-top: 1px; color: #fff; }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  p { color: ${({ theme }) => theme.muted}; font-size: 14px; line-height: 1.55; }
 `;
 
 const Steps = styled.ol`
@@ -408,18 +490,16 @@ const Steps = styled.ol`
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(24px, 4vw, 48px);
-  @media (max-width: 760px) { grid-template-columns: 1fr; gap: 0; }
+  max-width: 680px;
 `;
 
 const Step = styled.li`
   display: flex;
   gap: 16px;
-  padding: 24px 0;
+  padding: 18px 0;
   border-top: 1px solid ${({ theme }) => theme.line};
-  h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
-  p { color: ${({ theme }) => theme.muted}; font-size: 15px; line-height: 1.55; }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  p { color: ${({ theme }) => theme.muted}; font-size: 14px; line-height: 1.55; }
 `;
 
 const Num = styled.span`
@@ -434,37 +514,51 @@ const Num = styled.span`
   font-weight: 600;
 `;
 
-const Final = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 20px 32px;
-  margin-top: clamp(28px, 5vw, 48px);
+const Info = styled.dl`
+  margin: 0;
+  max-width: 680px;
 `;
 
-const Notes = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
+const Row = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  color: ${({ theme }) => theme.muted};
-  font-size: 14px;
-  li { display: inline-flex; align-items: center; gap: 6px; }
-  svg { color: #fff; }
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid ${({ theme }) => theme.line};
+  font-size: 15px;
+  dt { color: ${({ theme }) => theme.muted}; }
+  dd { margin: 0; text-align: right; }
+  a { text-decoration: underline; text-underline-offset: 3px; }
 `;
 
 const Footer = styled.footer`
-  padding: 32px 0 48px;
+  margin-top: clamp(36px, 6vw, 64px);
+  padding: 28px 0 40px;
   border-top: 1px solid ${({ theme }) => theme.line};
-  > div { align-items: flex-start; flex-wrap: wrap; }
 `;
 
 const FootNote = styled.p`
-  flex: 1 1 280px;
-  max-width: 520px;
+  max-width: 560px;
   color: ${({ theme }) => theme.dim};
   font-size: 13px;
   line-height: 1.6;
+`;
+
+// Phones keep an Install button in reach, like a store page.
+const Bar = styled.div`
+  display: none;
+  @media (max-width: 720px) {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px ${({ theme }) => theme.gutter} calc(12px + env(safe-area-inset-bottom));
+    background: rgba(18, 18, 18, 0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid ${({ theme }) => theme.line};
+    a { width: 100%; }
+  }
 `;
