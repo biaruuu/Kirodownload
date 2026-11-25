@@ -10,9 +10,12 @@ const SAME_PERSON_MS = 10 * 60 * 1000;
 
 // One real download = one tap on Install. The same phone tapping again within 10 minutes counts once,
 // and crawlers never count. The visitor is then sent straight on to the newest APK.
+export const maxDuration = 60;
+
 export async function GET(request) {
   const release = await getRelease();
   const target = release.url;
+  if (!target) return NextResponse.redirect(new URL('/', request.url), 302);
   try {
     const ua = request.headers.get('user-agent') || '';
     const db = getDb();
@@ -36,5 +39,19 @@ export async function GET(request) {
   } catch (e) {
     // never block the download because counting failed
   }
-  return NextResponse.redirect(target, 302);
+  // Stream the file instead of redirecting, so no repository URL is ever sent to the visitor.
+  try {
+    const upstream = await fetch(target, { redirect: 'follow' });
+    if (!upstream.ok || !upstream.body) throw new Error('upstream');
+    const headers = new Headers({
+      'Content-Type': 'application/vnd.android.package-archive',
+      'Content-Disposition': `attachment; filename="Kiro${release.version ? '-' + release.version : ''}.apk"`,
+      'Cache-Control': 'no-store',
+    });
+    const len = upstream.headers.get('content-length');
+    if (len) headers.set('Content-Length', len);
+    return new Response(upstream.body, { status: 200, headers });
+  } catch (e) {
+    return NextResponse.redirect(new URL('/', request.url), 302);
+  }
 }

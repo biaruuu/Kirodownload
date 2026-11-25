@@ -1,6 +1,6 @@
 # Kiro download site
 
-The public page for [Kiro](https://github.com/biaruuu/KiroApp), an anime app for Android: what it
+The public page for Kiro, an anime app for Android: what it
 does, screenshots, how to install, and a download button that always points at the newest release.
 
 Built with **Next.js** (App Router), **styled-components** and **Fluent icons**
@@ -10,7 +10,7 @@ hairline dividers.
 ## How the download button works
 
 `lib/release.js` asks the GitHub API for the latest release of this repository (`biaruuu/Kirodownload`,
-where new Kiro builds are published; it falls back to `biaruuu/KiroApp` until the first one is here) and
+where new Kiro builds are published; it falls back to the previous source until the first one is here) and
 caches it for 10 minutes. The Install button goes to `/api/download`, which counts the download and
 redirects to the newest `.apk`. If GitHub can't be reached it falls back to the releases page.
 
