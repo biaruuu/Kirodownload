@@ -384,7 +384,7 @@ const Hint = styled.span`
 
 const Stats = styled.section`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   padding: 16px 0;
   border-top: 1px solid ${({ theme }) => theme.line};
   border-bottom: 1px solid ${({ theme }) => theme.line};
