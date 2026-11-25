@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   ArrowDownload24Regular,
@@ -51,13 +52,45 @@ const STEPS = [
 
 const TAGS = ['Anime', 'Streaming', 'Offline', 'Watch party', 'Sub & dub', 'Free'];
 
+/** The download total, refreshed every few seconds while the page is open (and right after Install is tapped). */
+function useDownloads() {
+  const [count, setCount] = useState(null);
+  useEffect(() => {
+    let live = true;
+    const load = async () => {
+      if (document.hidden) return;
+      try {
+        const res = await fetch('/api/count', { cache: 'no-store' });
+        const json = await res.json();
+        if (live && typeof json.count === 'number') setCount(json.count);
+      } catch (e) {
+        /* keep the last number */
+      }
+    };
+    load();
+    const timer = setInterval(load, 4000);
+    const onShow = () => load();
+    document.addEventListener('visibilitychange', onShow);
+    return () => {
+      live = false;
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onShow);
+    };
+  }, []);
+  const bump = () => setTimeout(() => fetch('/api/count', { cache: 'no-store' }).then((r) => r.json()).then((j) => typeof j.count === 'number' && setCount(j.count)).catch(() => {}), 2500);
+  return [count, bump];
+}
+
 export default function Site({ release, dateLabel }) {
+  const [downloads, onInstall] = useDownloads();
+  const installHref = release.direct ? '/api/download' : release.url;
   const version = release.version ? `v${release.version}` : 'Latest';
   const stats = [
     { value: release.size ? `${release.size} MB` : 'APK', label: 'Size' },
     { value: 'Android 8+', label: 'Requires' },
     { value: 'Free', label: 'Price' },
     { value: version, label: 'Version' },
+    ...(downloads === null ? [] : [{ value: downloads.toLocaleString('en-US'), label: 'Downloads' }]),
   ];
 
   return (
@@ -82,7 +115,7 @@ export default function Site({ release, dateLabel }) {
             <Tiny>Contains no ads from us</Tiny>
           </Titles>
           <InstallCol>
-            <Pill href={release.url}>
+            <Pill href={installHref} onClick={onInstall}>
               <ArrowDownload24Regular />
               Install
             </Pill>
@@ -211,7 +244,7 @@ export default function Site({ release, dateLabel }) {
       </Footer>
 
       <Bar>
-        <Pill href={release.url}>
+        <Pill href={installHref} onClick={onInstall}>
           <ArrowDownload24Regular />
           Install{release.size ? ` · ${release.size} MB` : ''}
         </Pill>
